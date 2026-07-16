@@ -356,3 +356,45 @@ font-size:13px;
 letter-spacing:3px;
 color:#fff;
 }
+.subscribe-section{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:40px;
+padding:55px 60px;
+background:#f4f1eb;
+color:#111;
+}
+
+.subscribe-label{
+font-size:12px;
+letter-spacing:2px;
+margin-bottom:10px;
+}
+
+.subscribe-section h2{
+font-family:Georgia,serif;
+font-size:34px;
+font-weight:400;
+}
+
+.subscribe-form{
+display:flex;
+width:460px;
+}
+
+.subscribe-form input{
+flex:1;
+padding:18px;
+border:1px solid #ccc;
+font-size:14px;
+}
+
+.subscribe-form button{
+padding:18px 30px;
+border:none;
+background:#b70d19;
+color:#fff;
+font-weight:700;
+letter-spacing:1px;
+}
