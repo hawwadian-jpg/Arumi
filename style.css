@@ -192,7 +192,13 @@ z-index:1;
 }
 
 .navbar{
-z-index:3;
+    position:fixed;
+top:0;
+left:0;
+width:100%;
+z-index:1000;
+    background:rgba(0,0,0,.75);
+backdrop-filter:blur(10px);
 }
 
 .hero-content{
