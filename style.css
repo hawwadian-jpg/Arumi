@@ -251,4 +251,44 @@ color:#a80f18;
 font-size:13px;
 font-weight:700;
 letter-spacing:1px;
+}.featured{
+padding:70px 60px;
+background:#111;
+}
+
+.featured-title{
+margin-bottom:30px;
+font-size:14px;
+letter-spacing:3px;
+}
+
+.featured-grid{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:18px;
+}
+
+.work-card{
+aspect-ratio:1 / 1;
+background:#222;
+display:flex;
+flex-direction:column;
+justify-content:flex-end;
+padding:24px;
+}
+
+.work-card-books{
+grid-column:span 2;
+grid-row:span 2;
+}
+
+.work-card h3{
+font-family:Georgia,serif;
+font-size:28px;
+}
+
+.work-card p{
+margin-top:8px;
+font-size:12px;
+letter-spacing:2px;
 }
