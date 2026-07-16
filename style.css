@@ -399,7 +399,7 @@ font-weight:700;
 letter-spacing:1px;
 }
 .footer{
-    
+
 display:flex;
 justify-content:space-between;
 align-items:center;
@@ -415,5 +415,14 @@ gap:28px;
 }
 
 .footer a{
+color:#fff;
+}
+.footer-links{
+display:flex;
+gap:28px;
+margin-left:auto;
+}
+
+.footer-links a{
 color:#fff;
 }
