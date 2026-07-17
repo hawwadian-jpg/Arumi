@@ -568,3 +568,24 @@ line-height:1.6;
         white-space: nowrap;
     }
 }
+
+@media (max-width: 768px) {
+    .navbar .menu {
+        display: grid !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 10px 4px !important;
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .navbar .menu li {
+        list-style: none;
+        text-align: center;
+    }
+
+    .navbar .menu a {
+        font-size: 10px !important;
+        white-space: nowrap;
+    }
+}
