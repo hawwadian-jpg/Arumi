@@ -453,3 +453,38 @@ font-family:Georgia,serif;
 font-size:22px;
 line-height:1.6;
 }
+
+.contact-section{
+    padding:80px 60px;
+    background:#111;
+    color:#fff;
+    text-align:center;
+}
+
+.contact-label{
+    font-size:12px;
+    letter-spacing:3px;
+    margin-bottom:16px;
+}
+
+.contact-section h2{
+    font-family:Georgia, serif;
+    font-size:44px;
+    font-weight:400;
+    margin-bottom:28px;
+}
+
+.contact-email,
+.contact-telegram{
+    display:block;
+    width:max-content;
+    margin:12px auto;
+    color:#fff;
+    font-size:18px;
+    text-decoration:none;
+}
+
+.contact-email:hover,
+.contact-telegram:hover{
+    text-decoration:underline;
+}
