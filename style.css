@@ -694,3 +694,22 @@ line-height:1.6;
         border-bottom: 1px solid #d8d3ca;
     }
 }
+@media (max-width: 768px) {
+    .featured-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px;
+    }
+
+    .work-card-books {
+        grid-column: span 2 !important;
+        grid-row: span 1 !important;
+    }
+
+    .work-card h3 {
+        font-size: 22px;
+    }
+
+    .work-card {
+        padding: 16px;
+    }
+}
