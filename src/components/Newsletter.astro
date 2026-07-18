@@ -1,32 +1,33 @@
 ---
-import { site } from "@/content/site";
+import { getContent, type Locale } from "@/content/site";
+
+type Props = { locale: Locale };
+const { locale } = Astro.props;
+const copy = getContent(locale);
 ---
 
 <section class="newsletter" aria-labelledby="newsletter-title">
   <div data-reveal>
-    <p class="eyebrow eyebrow--dark">{site.newsletter.eyebrow}</p>
-    <h2 id="newsletter-title">{site.newsletter.title}</h2>
-    <p>{site.newsletter.disclaimer}</p>
+    <p class="eyebrow eyebrow--dark">{copy.newsletter.eyebrow}</p>
+    <h2 id="newsletter-title">{copy.newsletter.title}</h2>
+    <p>{copy.newsletter.disclaimer}</p>
   </div>
 
-  <!-- Netlify распознаёт форму во время сборки и сохраняет заявки без отдельного сервера. -->
   <form
     class="newsletter__form"
     name="newsletter"
     method="POST"
-    action="/thanks"
-    data-netlify="true"
-    data-netlify-honeypot="company"
+    action="/api/subscribe"
     data-reveal
   >
-    <input type="hidden" name="form-name" value="newsletter" />
+    <input type="hidden" name="language" value={locale} />
     <p class="honeypot" aria-hidden="true">
-      <label>Leave this field empty <input name="company" tabindex="-1" autocomplete="off" /></label>
+      <label>{copy.newsletter.honeypotLabel}<input name="company" tabindex="-1" autocomplete="off" /></label>
     </p>
-    <label for="newsletter-email">Your email address</label>
+    <label for={`newsletter-email-${locale}`}>{copy.newsletter.emailLabel}</label>
     <div class="newsletter__row">
-      <input id="newsletter-email" name="email" type="email" placeholder="name@example.com" required autocomplete="email" />
-      <button type="submit">Subscribe <span aria-hidden="true">→</span></button>
+      <input id={`newsletter-email-${locale}`} name="email" type="email" placeholder={copy.newsletter.emailPlaceholder} required autocomplete="email" />
+      <button type="submit">{copy.newsletter.submitLabel} <span aria-hidden="true">→</span></button>
     </div>
   </form>
 </section>

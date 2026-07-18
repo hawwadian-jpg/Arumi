@@ -1,0 +1,94 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Newsletter from "@/components/Newsletter.astro";
+import WorkCard from "@/components/WorkCard.astro";
+import { getContent, type Locale } from "@/content/site";
+
+type Props = { locale: Locale };
+const { locale } = Astro.props;
+const copy = getContent(locale);
+---
+
+<BaseLayout locale={locale}>
+  <section class="hero" id="home" aria-labelledby="hero-title">
+    <img
+      class="hero__image"
+      src={copy.hero.image}
+      alt={copy.hero.imageAlt}
+      width="1280"
+      height="718"
+      fetchpriority="high"
+    />
+    <div class="hero__veil"></div>
+    <div class="hero__content">
+      <p class="eyebrow hero__eyebrow">{copy.hero.eyebrow}</p>
+      <h1 id="hero-title">
+        <span>{copy.hero.firstName}</span>
+        <span>{copy.hero.lastName}</span>
+      </h1>
+      <p class="hero__subtitle">{copy.hero.subtitle}</p>
+      <a class="button button--primary" href="#works">{copy.hero.cta} <span aria-hidden="true">↓</span></a>
+    </div>
+    <p class="hero__scroll" aria-hidden="true">{copy.interface.scrollHint} <span></span></p>
+  </section>
+
+  <section class="pillars" aria-label={copy.worksHeading.eyebrow}>
+    {copy.pillars.map((pillar) => (
+      <article class="pillar" data-reveal>
+        <p class="pillar__number">{pillar.number}</p>
+        <h2>{pillar.title}</h2>
+        <p>{pillar.text.split("\n").map((line) => <>{line}<br /></>)}</p>
+        <a href={pillar.href}>{pillar.linkLabel} <span aria-hidden="true">↗</span></a>
+      </article>
+    ))}
+  </section>
+
+  <section class="works section" id="works" aria-labelledby="works-title">
+    <header class="section-heading" data-reveal>
+      <div>
+        <p class="eyebrow">{copy.worksHeading.eyebrow}</p>
+        <h2 id="works-title">{copy.worksHeading.title}</h2>
+      </div>
+      <p>{copy.worksHeading.text}</p>
+    </header>
+
+    <div class="works__grid">
+      {copy.works.map((work, index) => <WorkCard work={work} featured={index === 0} locale={locale} />)}
+    </div>
+  </section>
+
+  <section class="about section" id="about" aria-labelledby="about-title">
+    <div class="about__intro" data-reveal>
+      <p class="eyebrow eyebrow--dark">{copy.about.eyebrow}</p>
+      <h2 id="about-title">{copy.about.title}</h2>
+    </div>
+    <div class="about__copy" data-reveal>
+      {copy.about.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+      <a class="text-link" href="#contact">{copy.about.linkLabel} <span aria-hidden="true">→</span></a>
+    </div>
+  </section>
+
+  <section class="quote" aria-label={copy.quote.author}>
+    <div class="quote__mark" aria-hidden="true">“</div>
+    <blockquote data-reveal>
+      <p>{copy.quote.text}</p>
+      <cite>— {copy.quote.author}</cite>
+    </blockquote>
+  </section>
+
+  <section class="contact section" id="contact" aria-labelledby="contact-title">
+    <div data-reveal>
+      <p class="eyebrow">{copy.contact.eyebrow}</p>
+      <h2 id="contact-title">{copy.contact.title}</h2>
+    </div>
+    <div class="contact__details" data-reveal>
+      <p>{copy.contact.text}</p>
+      <a class="contact__email" href={`mailto:${copy.contact.email}`}>{copy.contact.email}</a>
+      <a class="text-link text-link--light" href={copy.contact.telegramUrl} target="_blank" rel="noreferrer">
+        {copy.contact.telegramPrefix} {copy.contact.telegramLabel} <span aria-hidden="true">↗</span>
+      </a>
+    </div>
+  </section>
+
+  <Newsletter locale={locale} />
+</BaseLayout>

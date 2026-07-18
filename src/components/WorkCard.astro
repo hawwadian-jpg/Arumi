@@ -1,17 +1,18 @@
 ---
-import type { Work } from "@/content/site";
+import { localePath, type Locale, type Work } from "@/content/site";
 
 type Props = {
   work: Work;
   featured?: boolean;
+  locale: Locale;
 };
 
-const { work, featured = false } = Astro.props;
+const { work, featured = false, locale } = Astro.props;
 ---
 
 <a
   class:list={["work-card", { "work-card--featured": featured }]}
-  href={`/work/${work.slug}`}
+  href={localePath(locale, `/work/${work.slug}`)}
   data-reveal
 >
   <img src={work.image} alt="" loading={featured ? "eager" : "lazy"} width="1024" height="1536" />

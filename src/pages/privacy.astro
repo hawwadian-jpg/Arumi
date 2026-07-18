@@ -1,20 +1,5 @@
 ---
-import BaseLayout from "@/layouts/BaseLayout.astro";
-import { site } from "@/content/site";
+import LegalPage from "@/components/LegalPage.astro";
 ---
 
-<BaseLayout title={`Privacy Policy — ${site.meta.shortTitle}`} description="Privacy policy for the Dina Makarova website.">
-  <article class="legal section">
-    <p class="eyebrow">Legal</p>
-    <h1>Privacy Policy</h1>
-    <p class="legal__updated">Last updated: July 2026</p>
-    <h2>Information we receive</h2>
-    <p>If you subscribe, the website receives the email address you provide. The hosting provider may also process standard technical logs required to serve and protect the website.</p>
-    <h2>How information is used</h2>
-    <p>Your email is used only to send requested updates. It is not sold or shared for advertising purposes.</p>
-    <h2>Storage and removal</h2>
-    <p>Subscription requests are processed by the website hosting provider. To request removal, email <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>.</p>
-    <h2>External links</h2>
-    <p>This website may link to third-party services. Their own privacy policies apply after you follow those links.</p>
-  </article>
-</BaseLayout>
+<LegalPage locale="ru" kind="privacy" />

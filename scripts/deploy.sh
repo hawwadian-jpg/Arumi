@@ -29,20 +29,28 @@ SITE_URL="https://${DOMAIN}" npm run build
 tar -C "${PROJECT_ROOT}/dist" -czf "${temporary_directory}/${archive_name}" .
 log "Передаю архив на сервер."
 "${SCP_COMMAND[@]}" "${temporary_directory}/${archive_name}" "${SERVER_USER}@${SERVER_HOST}:/tmp/${archive_name}"
+"${SCP_COMMAND[@]}" "${PROJECT_ROOT}/server/subscription-server.mjs" "${SERVER_USER}@${SERVER_HOST}:/tmp/seeonline-subscription-server.mjs"
 
 log "Переключаю релиз атомарно."
-remote_exec "${REMOTE_PRIVILEGE[@]}" bash -s -- "${REMOTE_ROOT}" "${release_id}" "/tmp/${archive_name}" <<'REMOTE_SCRIPT'
+remote_exec "${REMOTE_PRIVILEGE[@]}" bash -s -- "${REMOTE_ROOT}" "${release_id}" "/tmp/${archive_name}" "/tmp/seeonline-subscription-server.mjs" <<'REMOTE_SCRIPT'
 set -Eeuo pipefail
 
 remote_root="$1"
 release_id="$2"
 archive_path="$3"
+backend_path="$4"
 release_path="${remote_root}/releases/${release_id}"
 
 mkdir -p "${release_path}"
 tar -xzf "${archive_path}" -C "${release_path}"
 rm -f "${archive_path}"
 chown -R www-data:www-data "${release_path}"
+
+if [[ -f "${backend_path}" ]]; then
+  install -m 644 "${backend_path}" /opt/seeonline/subscription-server.mjs
+  rm -f "${backend_path}"
+  systemctl restart seeonline-subscriptions.service
+fi
 
 ln -sfn "${release_path}" "${remote_root}/current.next"
 mv -Tf "${remote_root}/current.next" "${remote_root}/current"

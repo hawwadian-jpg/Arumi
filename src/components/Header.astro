@@ -1,49 +1,179 @@
 ---
-import { site } from "@/content/site";
+import { alternatePath, getContent, localePath, type Locale } from "@/content/site";
+
+type Props = { locale: Locale };
+const { locale } = Astro.props;
+const copy = getContent(locale);
+const homePath = localePath(locale);
+const languagePath = alternatePath(locale, Astro.url.pathname);
+const alternateLocale = locale === "ru" ? "EN" : "RU";
 ---
 
 <header class="site-header" data-header>
-  <a class="brand" href="/" aria-label="Dina Makarova — home">
-    <span>DM</span>
-    <span class="brand__name">Dina Makarova</span>
-  </a>
+  <div class="site-header__surface">
+    <a class="brand" href={homePath} aria-label={`${copy.meta.shortTitle} — ${copy.navigation[0].label}`}>
+      <img class="brand__mark" src="/brand-mark.svg" alt="" width="32" height="32" />
+      <span class="brand__name">{copy.meta.shortTitle}</span>
+    </a>
 
-  <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-navigation">
-    <span class="sr-only">Open navigation</span>
-    <span class="menu-toggle__line"></span>
-    <span class="menu-toggle__line"></span>
-  </button>
+    <nav class="site-nav site-nav--desktop" aria-label={copy.interface.mainNavigation}>
+      <ul>
+        {copy.navigation.map((item) => (
+          <li>
+            <a data-section-link={item.anchor} href={`${homePath}#${item.anchor}`}>{item.label}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
 
-  <nav class="site-nav" id="site-navigation" aria-label="Main navigation">
-    <ul>
-      {site.navigation.map((item) => (
-        <li><a href={item.href}>{item.label}</a></li>
-      ))}
-    </ul>
+    <div class="site-header__actions">
+      <a class="language-switch" data-language-switch data-base-href={languagePath} href={languagePath} hreflang={locale === "ru" ? "en" : "ru"} aria-label={copy.interface.languageLabel}>
+        <span>{locale.toUpperCase()}</span>
+        <strong>{alternateLocale}</strong>
+      </a>
+
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-navigation">
+        <span class="sr-only" data-menu-label>{copy.interface.menuOpen}</span>
+        <span class="menu-toggle__line"></span>
+        <span class="menu-toggle__line"></span>
+      </button>
+    </div>
+  </div>
+
+  <nav class="mobile-nav" id="mobile-navigation" aria-label={copy.interface.mainNavigation}>
+    <div class="mobile-nav__inner">
+      <p class="mobile-nav__eyebrow">{copy.meta.shortTitle}</p>
+      <ol>
+        {copy.navigation.map((item, index) => (
+          <li>
+            <span aria-hidden="true">0{index + 1}</span>
+            <a data-section-link={item.anchor} href={`${homePath}#${item.anchor}`}>{item.label}</a>
+          </li>
+        ))}
+      </ol>
+      <div class="mobile-nav__footer">
+        <a href={`mailto:${copy.contact.email}`}>{copy.contact.email}</a>
+        <a data-language-switch data-base-href={languagePath} href={languagePath} hreflang={locale === "ru" ? "en" : "ru"}>{alternateLocale} →</a>
+      </div>
+    </div>
   </nav>
 </header>
 
-<script>
-  /** Управление меню изолировано внутри шапки и не требует сторонних библиотек. */
-  const header = document.querySelector<HTMLElement>("[data-header]");
-  const toggle = header?.querySelector<HTMLButtonElement>(".menu-toggle");
-  const navigation = header?.querySelector<HTMLElement>(".site-nav");
+<script is:inline define:vars={{ openLabel: copy.interface.menuOpen, closeLabel: copy.interface.menuClose }}>
+  const header = document.querySelector("[data-header]");
+  const toggle = header?.querySelector(".menu-toggle");
+  const menuLabel = toggle?.querySelector("[data-menu-label]");
+  const sectionLinks = header?.querySelectorAll("[data-section-link]") ?? [];
+  const languageLinks = header?.querySelectorAll("[data-language-switch]") ?? [];
+  let lockedScrollPosition = 0;
+  let ticking = false;
 
-  const closeMenu = () => {
-    header?.classList.remove("menu-is-open");
-    toggle?.setAttribute("aria-expanded", "false");
-    document.body.classList.remove("has-open-menu");
+  const setMenuState = (open) => {
+    if (!header || !toggle) return;
+
+    header.classList.toggle("menu-is-open", open);
+    toggle.setAttribute("aria-expanded", String(open));
+    if (menuLabel) menuLabel.textContent = open ? closeLabel : openLabel;
+
+    if (open) {
+      lockedScrollPosition = window.scrollY;
+      document.body.style.top = `-${lockedScrollPosition}px`;
+      document.body.classList.add("has-open-menu");
+    } else if (document.body.classList.contains("has-open-menu")) {
+      document.body.classList.remove("has-open-menu");
+      document.body.style.top = "";
+      const previousScrollBehavior = document.documentElement.style.scrollBehavior;
+      document.documentElement.style.scrollBehavior = "auto";
+      window.scrollTo(0, lockedScrollPosition);
+      window.requestAnimationFrame(() => {
+        document.documentElement.style.scrollBehavior = previousScrollBehavior;
+      });
+    }
   };
 
-  toggle?.addEventListener("click", () => {
-    const opening = !header?.classList.contains("menu-is-open");
-    header?.classList.toggle("menu-is-open", opening);
-    toggle.setAttribute("aria-expanded", String(opening));
-    document.body.classList.toggle("has-open-menu", opening);
+  toggle?.addEventListener("click", () => setMenuState(!header?.classList.contains("menu-is-open")));
+  sectionLinks.forEach((link) => link.addEventListener("click", () => setMenuState(false)));
+  window.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") setMenuState(false);
   });
 
-  navigation?.querySelectorAll("a").forEach((link) => link.addEventListener("click", closeMenu));
-  window.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") closeMenu();
-  });
+  // Header уменьшается после первого экрана, но остаётся доступным постоянно.
+  const updateHeader = () => {
+    header?.classList.toggle("is-condensed", window.scrollY > 80);
+    ticking = false;
+  };
+
+  window.addEventListener("scroll", () => {
+    if (!ticking) {
+      window.requestAnimationFrame(updateHeader);
+      ticking = true;
+    }
+  }, { passive: true });
+  updateHeader();
+
+  const initializeSectionNavigation = () => {
+    // Компонент хедера расположен до main, поэтому цели ищутся только после
+    // построения DOM. Иначе браузер ещё не видит секции страницы.
+    const observedSections = [...sectionLinks]
+      .map((link) => document.getElementById(link.dataset.sectionLink ?? ""))
+      .filter((section, index, sections) => section && sections.indexOf(section) === index);
+
+    let activeSectionId = "";
+    let sectionTicking = false;
+
+    // Активным становится последний раздел, верх которого уже прошёл под шапкой.
+    // Такой расчёт устойчив и для высоких экранов, и для коротких секций на телефоне.
+    const updateActiveSection = () => {
+      if (!observedSections.length) {
+        sectionTicking = false;
+        return;
+      }
+
+      const headerBottom = header?.getBoundingClientRect().bottom ?? 0;
+      const activationLine = headerBottom + Math.min(120, window.innerHeight * 0.16);
+      let currentSection = observedSections[0];
+
+      observedSections.forEach((section) => {
+        if (section.getBoundingClientRect().top <= activationLine) currentSection = section;
+      });
+
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) {
+        currentSection = observedSections[observedSections.length - 1];
+      }
+
+      const currentId = currentSection.id;
+      if (currentId === activeSectionId) {
+        sectionTicking = false;
+        return;
+      }
+      activeSectionId = currentId;
+
+      sectionLinks.forEach((link) => {
+        const active = link.dataset.sectionLink === currentId;
+        link.classList.toggle("is-active", active);
+        if (active) link.setAttribute("aria-current", "location");
+        else link.removeAttribute("aria-current");
+      });
+      languageLinks.forEach((link) => {
+        const baseHref = link.dataset.baseHref ?? link.getAttribute("href") ?? "/";
+        link.setAttribute("href", `${baseHref}#${currentId}`);
+      });
+      sectionTicking = false;
+    };
+
+    window.addEventListener("scroll", () => {
+      if (!sectionTicking) {
+        window.requestAnimationFrame(updateActiveSection);
+        sectionTicking = true;
+      }
+    }, { passive: true });
+    window.addEventListener("resize", updateActiveSection, { passive: true });
+    updateActiveSection();
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initializeSectionNavigation, { once: true });
+  } else {
+    initializeSectionNavigation();
+  }
 </script>

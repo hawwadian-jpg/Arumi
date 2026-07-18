@@ -1,12 +1,5 @@
 ---
-import BaseLayout from "@/layouts/BaseLayout.astro";
+import MessagePage from "@/components/MessagePage.astro";
 ---
 
-<BaseLayout title="Page not found — Dina Makarova" description="The requested page could not be found.">
-  <section class="message-page section">
-    <p class="eyebrow">404</p>
-    <h1>This story hasn’t been written yet.</h1>
-    <p>The page may have moved, or the address may be incorrect.</p>
-    <a class="button button--primary" href="/">Return home <span aria-hidden="true">→</span></a>
-  </section>
-</BaseLayout>
+<MessagePage locale="ru" kind="notFound" />

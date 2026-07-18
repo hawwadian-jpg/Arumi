@@ -1,0 +1,18 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getContent, localePath, type Locale } from "@/content/site";
+
+type Props = { locale: Locale; kind: "thanks" | "notFound" };
+const { locale, kind } = Astro.props;
+const copy = getContent(locale);
+const message = copy.messages[kind];
+---
+
+<BaseLayout locale={locale} title={`${message.title} — ${copy.meta.shortTitle}`} description={message.text}>
+  <section class="message-page section">
+    <p class="eyebrow">{message.eyebrow}</p>
+    <h1>{message.title}</h1>
+    <p>{message.text}</p>
+    <a class="button button--primary" href={localePath(locale)}>{message.action} <span aria-hidden="true">→</span></a>
+  </section>
+</BaseLayout>

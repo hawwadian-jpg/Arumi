@@ -6,7 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck disable=SC1091
 source "${SCRIPT_DIR}/lib/connection.sh"
 
-TLS_MODE="${TLS_MODE:-letsencrypt}"
+TLS_MODE="${TLS_MODE:-custom}"
 LETSENCRYPT_EMAIL="${LETSENCRYPT_EMAIL:-}"
 CERT_FILE="${CERT_FILE:-${PROJECT_ROOT}/.secrets/${DOMAIN}.fullchain.pem}"
 KEY_FILE="${KEY_FILE:-${PROJECT_ROOT}/.secrets/${DOMAIN}.key}"
@@ -17,6 +17,9 @@ KEY_FILE="${KEY_FILE:-${PROJECT_ROOT}/.secrets/${DOMAIN}.key}"
   || die "TLS_MODE должен быть letsencrypt или custom."
 
 prepare_connection
+
+log "Загружаю локальный обработчик подписок."
+"${SCP_COMMAND[@]}" "${PROJECT_ROOT}/server/subscription-server.mjs" "${SERVER_USER}@${SERVER_HOST}:/tmp/seeonline-subscription-server.mjs"
 
 if [[ "${TLS_MODE}" == "custom" ]]; then
   DOMAIN="${DOMAIN}" CERT_FILE="${CERT_FILE}" KEY_FILE="${KEY_FILE}" "${SCRIPT_DIR}/validate-certificate.sh"
@@ -41,10 +44,44 @@ fi
 
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
-apt-get install -y nginx curl ca-certificates certbot python3-certbot-nginx
+packages=(nginx curl ca-certificates nodejs)
+if [[ "${tls_mode}" == "letsencrypt" ]]; then
+  packages+=(certbot python3-certbot-nginx)
+fi
+apt-get install -y "${packages[@]}"
 
 mkdir -p "${remote_root}/releases" "${remote_root}/shared"
 chown -R www-data:www-data "${remote_root}"
+
+install -d -m 755 /opt/seeonline
+install -m 644 /tmp/seeonline-subscription-server.mjs /opt/seeonline/subscription-server.mjs
+rm -f /tmp/seeonline-subscription-server.mjs
+install -d -o www-data -g www-data -m 750 /var/lib/seeonline
+
+cat > /etc/systemd/system/seeonline-subscriptions.service <<'SYSTEMD_SERVICE'
+[Unit]
+Description=Seeonline subscription form backend
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+ExecStart=/usr/bin/node /opt/seeonline/subscription-server.mjs
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/seeonline
+
+[Install]
+WantedBy=multi-user.target
+SYSTEMD_SERVICE
+
+systemctl daemon-reload
+systemctl enable --now seeonline-subscriptions.service
 
 # Первая конфигурация HTTP нужна Certbot для проверки владения доменом.
 cat > "/etc/nginx/sites-available/${domain}" <<NGINX_HTTP
@@ -68,6 +105,15 @@ server {
 
     location / {
         try_files \$uri \$uri/ =404;
+    }
+
+    location = /api/subscribe {
+        client_max_body_size 8k;
+        proxy_pass http://127.0.0.1:4322/api/subscribe;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header Host \$host;
+        proxy_connect_timeout 3s;
+        proxy_read_timeout 5s;
     }
 
     location /_astro/ {
@@ -156,6 +202,15 @@ server {
 
     location / {
         try_files \$uri \$uri/ =404;
+    }
+
+    location = /api/subscribe {
+        client_max_body_size 8k;
+        proxy_pass http://127.0.0.1:4322/api/subscribe;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header Host \$host;
+        proxy_connect_timeout 3s;
+        proxy_read_timeout 5s;
     }
 
     location /_astro/ {

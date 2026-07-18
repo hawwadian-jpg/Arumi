@@ -1,0 +1,40 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Newsletter from "@/components/Newsletter.astro";
+import { getContent, localePath, type Locale, type Work } from "@/content/site";
+
+type Props = { locale: Locale; work: Work };
+const { locale, work } = Astro.props;
+const copy = getContent(locale);
+const currentIndex = copy.works.findIndex((item) => item.slug === work.slug);
+const nextWork = copy.works[(currentIndex + 1) % copy.works.length];
+---
+
+<BaseLayout locale={locale} title={`${work.title} — ${copy.meta.shortTitle}`} description={work.summary} image={work.image}>
+  <article class="work-detail">
+    <header class="work-detail__hero">
+      <img class={`work-detail__image--${work.slug}`} src={work.image} alt="" width="1024" height="1536" />
+      <div class="work-detail__veil"></div>
+      <div class="work-detail__heading">
+        <p class="eyebrow">{work.eyebrow}</p>
+        <h1>{work.title}</h1>
+        <p>{work.summary}</p>
+      </div>
+    </header>
+
+    <section class="work-detail__body section">
+      <p class="work-detail__index">{currentIndex + 1} {copy.interface.workProgressSeparator} {copy.works.length}</p>
+      <div data-reveal>
+        {work.description.map((paragraph) => <p>{paragraph}</p>)}
+        <p class="work-detail__note">{copy.interface.workComingSoon}</p>
+      </div>
+    </section>
+
+    <a class="next-work" href={localePath(locale, `/work/${nextWork.slug}`)}>
+      <span>{copy.interface.nextChapter}</span>
+      <strong>{nextWork.title}</strong>
+      <span aria-hidden="true">→</span>
+    </a>
+  </article>
+  <Newsletter locale={locale} />
+</BaseLayout>
