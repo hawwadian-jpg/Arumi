@@ -751,10 +751,12 @@ overflow-wrap: anywhere;
     }
 }
 @media (max-width: 768px) {
-    .navbar {
-        padding: 16px 10px !important;
-    }
 
+.navbar {
+    height: 160px !important;
+    padding: 16px 10px !important;
+    box-sizing: border-box !important;
+}
     .navbar .menu {
         row-gap: 12px !important;
     }
