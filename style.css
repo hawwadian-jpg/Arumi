@@ -679,3 +679,18 @@ line-height:1.6;
         border-bottom: 1px solid #d8d3ca;
     }
 }
+
+@media (max-width: 768px) {
+    .pillars {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        width: 100% !important;
+    }
+
+    .pillar {
+        width: 100% !important;
+        padding: 55px 25px !important;
+        border-right: none !important;
+        border-bottom: 1px solid #d8d3ca;
+    }
+}
