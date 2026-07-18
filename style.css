@@ -741,7 +741,7 @@ overflow-wrap: anywhere;
     }
 
     .work-card:nth-child(5) p {
-        font-size: 10px !important;
+        font-size: 11px !important;
         letter-spacing: 1px !important;
     }
 }
