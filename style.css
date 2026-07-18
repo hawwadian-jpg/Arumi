@@ -641,3 +641,26 @@ line-height:1.6;
         background: #000;
     }
 }
+
+@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 48px;
+        line-height: 0.9;
+    }
+
+    .label {
+        font-size: 11px;
+        line-height: 1.5;
+        letter-spacing: 3px;
+    }
+
+    .subtitle {
+        font-size: 18px;
+        line-height: 1.4;
+    }
+
+    .hero-button {
+        padding: 16px 24px;
+        font-size: 12px;
+    }
+}
