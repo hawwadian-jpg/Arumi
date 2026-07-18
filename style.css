@@ -753,7 +753,7 @@ overflow-wrap: anywhere;
 @media (max-width: 768px) {
 
 .navbar {
-    height: 160px !important;
+    height: 200px !important;
     padding: 16px 10px !important;
     box-sizing: border-box !important;
 }
