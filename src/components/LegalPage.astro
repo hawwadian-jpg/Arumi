@@ -1,0 +1,26 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getContent, type Locale } from "@/content/site";
+
+type Props = { locale: Locale; kind: "privacy" | "terms" };
+const { locale, kind } = Astro.props;
+const copy = getContent(locale);
+const document = copy.legal[kind];
+---
+
+<BaseLayout locale={locale} title={`${document.title} — ${copy.meta.shortTitle}`} description={document.description}>
+  <article class="legal section">
+    <p class="eyebrow">{copy.legal.eyebrow}</p>
+    <h1>{document.title}</h1>
+    <p class="legal__updated">{copy.legal.updated}</p>
+    {document.sections.map((section, index) => (
+      <section data-reveal>
+        <p class="legal__number">0{index + 1}</p>
+        <div>
+          <h2>{section.title}</h2>
+          <p>{section.text}{index === 2 && kind === "privacy" ? <> <a href={`mailto:${copy.contact.email}`}>{copy.contact.email}</a>.</> : null}</p>
+        </div>
+      </section>
+    ))}
+  </article>
+</BaseLayout>

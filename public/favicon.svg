@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">Dina Makarova</title>
+  <rect width="64" height="64" rx="16" fill="#a31924"/>
+  <path d="M18 14h14.2C44.5 14 52 21 52 32s-7.5 18-19.8 18H18V14Zm13.4 27.6c7.2 0 11-3.3 11-9.6s-3.8-9.6-11-9.6h-3.7v19.2h3.7Z" fill="#fffdf9"/>
+  <path d="M16 48.8 28.7 35l4.9 5.2L24 50H16v-1.2Z" fill="#e9ba9f"/>
+  <circle cx="48.5" cy="15.5" r="3.5" fill="#e9ba9f"/>
+</svg>

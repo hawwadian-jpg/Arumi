@@ -1,0 +1,13 @@
+---
+import WorkDetailPage from "@/components/WorkDetailPage.astro";
+import { getContent, type Work } from "@/content/site";
+
+export function getStaticPaths() {
+  return getContent("en").works.map((work) => ({ params: { slug: work.slug }, props: { work } }));
+}
+
+type Props = { work: Work };
+const { work } = Astro.props;
+---
+
+<WorkDetailPage locale="en" work={work} />

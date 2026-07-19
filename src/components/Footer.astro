@@ -1,0 +1,20 @@
+---
+import { getContent, localePath, type Locale } from "@/content/site";
+
+type Props = { locale: Locale };
+const { locale } = Astro.props;
+const copy = getContent(locale);
+---
+
+<footer class="footer">
+  <a class="footer__brand" href={localePath(locale)}>
+    <img src="/brand-mark.svg" alt="" width="34" height="34" />
+    <span>{copy.meta.shortTitle}</span>
+  </a>
+  <p>© {new Date().getFullYear()} {copy.meta.shortTitle}. {copy.footer.rights}.</p>
+  <nav aria-label={copy.interface.legalNavigation}>
+    <a href={localePath(locale, "/privacy")}>{copy.footer.privacy}</a>
+    <a href={localePath(locale, "/terms")}>{copy.footer.terms}</a>
+    <a href="#main-content">{copy.interface.backToTop} ↑</a>
+  </nav>
+</footer>

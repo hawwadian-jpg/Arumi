@@ -1,0 +1,29 @@
+name: Проверка сайта
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: TypeScript и production-сборка
+    runs-on: ubuntu-latest
+    steps:
+      - name: Получить исходный код
+        uses: actions/checkout@v4
+
+      - name: Подключить Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Установить зафиксированные зависимости
+        run: npm ci
+
+      - name: Проверить и собрать сайт
+        run: npm run build

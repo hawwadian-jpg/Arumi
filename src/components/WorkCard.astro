@@ -1,0 +1,25 @@
+---
+import { localePath, type Locale, type Work } from "@/content/site";
+
+type Props = {
+  work: Work;
+  featured?: boolean;
+  locale: Locale;
+};
+
+const { work, featured = false, locale } = Astro.props;
+---
+
+<a
+  class:list={["work-card", { "work-card--featured": featured }]}
+  href={localePath(locale, `/work/${work.slug}`)}
+  data-reveal
+>
+  <img src={work.image} alt="" loading={featured ? "eager" : "lazy"} width="1024" height="1536" />
+  <span class="work-card__shade"></span>
+  <span class="work-card__content">
+    <span class="work-card__eyebrow">{work.eyebrow}</span>
+    <strong>{work.title}</strong>
+    <span class="work-card__arrow" aria-hidden="true">↗</span>
+  </span>
+</a>
