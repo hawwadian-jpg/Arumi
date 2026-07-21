@@ -32,7 +32,7 @@ log "Передаю архив на сервер."
 "${SCP_COMMAND[@]}" "${PROJECT_ROOT}/server/subscription-server.mjs" "${SERVER_USER}@${SERVER_HOST}:/tmp/seeonline-subscription-server.mjs"
 
 log "Переключаю релиз атомарно."
-remote_exec "${REMOTE_PRIVILEGE[@]}" bash -s -- "${REMOTE_ROOT}" "${release_id}" "/tmp/${archive_name}" "/tmp/seeonline-subscription-server.mjs" <<'REMOTE_SCRIPT'
+remote_exec_privileged bash -s -- "${REMOTE_ROOT}" "${release_id}" "/tmp/${archive_name}" "/tmp/seeonline-subscription-server.mjs" <<'REMOTE_SCRIPT'
 set -Eeuo pipefail
 
 remote_root="$1"

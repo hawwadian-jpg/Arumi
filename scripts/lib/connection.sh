@@ -18,6 +18,7 @@ SERVER_HOST="${SERVER_HOST:-}"
 SERVER_USER="${SERVER_USER:-root}"
 SSH_PORT="${SSH_PORT:-22}"
 REMOTE_ROOT="${REMOTE_ROOT:-/var/www/${DOMAIN}}"
+REMOTE_PRIVILEGE=()
 
 log() {
   printf '\033[1;34m[deploy]\033[0m %s\n' "$*"
@@ -85,6 +86,14 @@ prepare_connection() {
 
 remote_exec() {
   "${SSH_COMMAND[@]}" "${SERVER_USER}@${SERVER_HOST}" "$@"
+}
+
+remote_exec_privileged() {
+  if ((${#REMOTE_PRIVILEGE[@]})); then
+    remote_exec "${REMOTE_PRIVILEGE[@]}" "$@"
+  else
+    remote_exec "$@"
+  fi
 }
 
 remote_copy() {
