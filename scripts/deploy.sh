@@ -26,7 +26,7 @@ log "Проверяю и собираю production-версию."
 cd "${PROJECT_ROOT}"
 SITE_URL="https://${DOMAIN}" npm run build
 
-tar -C "${PROJECT_ROOT}/dist" -czf "${temporary_directory}/${archive_name}" .
+COPYFILE_DISABLE=1 tar --no-xattrs -C "${PROJECT_ROOT}/dist" -czf "${temporary_directory}/${archive_name}" .
 log "Передаю архив на сервер."
 "${SCP_COMMAND[@]}" "${temporary_directory}/${archive_name}" "${SERVER_USER}@${SERVER_HOST}:/tmp/${archive_name}"
 "${SCP_COMMAND[@]}" "${PROJECT_ROOT}/server/subscription-server.mjs" "${SERVER_USER}@${SERVER_HOST}:/tmp/seeonline-subscription-server.mjs"
@@ -47,6 +47,7 @@ rm -f "${archive_path}"
 chown -R www-data:www-data "${release_path}"
 
 if [[ -f "${backend_path}" ]]; then
+  install -d -m 755 /opt/seeonline
   install -m 644 "${backend_path}" /opt/seeonline/subscription-server.mjs
   rm -f "${backend_path}"
   systemctl restart seeonline-subscriptions.service
