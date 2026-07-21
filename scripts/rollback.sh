@@ -10,7 +10,7 @@ prepare_connection
 prepare_privilege
 log "Переключаю сайт на предыдущий релиз."
 
-remote_exec "${REMOTE_PRIVILEGE[@]}" bash -s -- "${REMOTE_ROOT}" <<'REMOTE_SCRIPT'
+remote_exec_privileged bash -s -- "${REMOTE_ROOT}" <<'REMOTE_SCRIPT'
 set -Eeuo pipefail
 
 remote_root="$1"
